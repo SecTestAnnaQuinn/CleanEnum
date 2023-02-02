@@ -8,7 +8,7 @@ Domain Groups
 Domain Group Memberships
 
 
-More features and refinements will be needed, and will be coming in the future.  I have not tested this against DCs that return multiple domains, and there may be issues that arise from that.  In addition, the Password Policy is set to only return 18 lines after the grep point, and may cut off some information should the Policy return more information.  This is very much a first draft.
+More features and refinements will be needed, and will be coming in the future.  Currently, the Password Policy is set to only return 18 lines after the grep point, and may cut off some information should the Policy return more information.  I will be diving into the enum4linux code a bit to see what adjustments I may need to make for cases I have yet to see.
 
 ## Utilization
 Upon finding that null smb sessions are allowed to the domain controller, simply run the script with the IP of the domain controller passed as an argument.  
