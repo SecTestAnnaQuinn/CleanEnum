@@ -11,14 +11,14 @@ clear='\033[0m'
 ip=$1
 
 Enumerator() {
-	echo -e "$red Running enum4linux, this may take a while $clear"
+	echo -e "$red Running enum4linux, this may take a while $clear" "\n\n"
 	enum4linux -u '' -p '' -val "$ip" > enum
 	UserList
 }
 
 UserList() { 
 
-	echo -e "$yellow ========================================(     User Descriptions on $blue $ip $yellow     )========================================" $clear | tee "UserDescriptions@$ip"
+	echo -e "$yellow ========================================(     User Descriptions on $blue $ip $yellow     )========================================" "\n" $clear | tee "UserDescriptions@$ip"
 	cat enum | grep "index" | awk -F "Name:" '{print $2}' | awk -F "Desc" '{print $1 ":" $2}' | tr -d "\t"| sed -e 's/Desc//g' | awk -F ": " '{print $1 $2}' | column -s ":" -t >> "UserDescriptions@$ip"
 	GetDomain
 	UserNames
@@ -29,7 +29,7 @@ GetDomain() {
 }
 
 UserNames() {
-	echo -e "$yellow ========================================(         Usernames on $blue $ip $yellow         )========================================" $clear | tee "Usernames@$ip"
+	echo -e "$yellow ========================================(         Usernames on $blue $ip $yellow         )========================================" "\n" $clear | tee "Usernames@$ip"
 	cat enum | grep "user:\[" | awk -F "[" '{print $2}' | awk -F "]" '{print $1}' | sort | uniq > Names.txt
 	while IFS= read -r line; do
 		echo $Domain'\'$line >> "Usernames@$ip"
@@ -39,23 +39,23 @@ UserNames() {
 }
 
 PasswordPolicy() {
-	echo -e "$yellow ========================================(     Password Policies on $blue $ip $yellow     )========================================" $clear | tee "PasswordPolicies@$ip"
+	echo -e "$yellow ========================================(     Password Policies on $blue $ip $yellow     )========================================" "\n" $clear | tee "PasswordPolicies@$ip"
 	cat enum | grep "Password Info for Domain" -A 18 >> "PasswordPolicies@$ip"
 	DomainGroups
 }
 
 DomainGroups() {
-	echo -e "$yellow ========================================(       Domain Groups on $blue $ip $yellow       )========================================" $clear | tee "DomainGroups@$ip"
-	cat enum | grep "Getting domain groups" -A 10000 | grep "group:\[" | awk -F "[" '{print $2}' | awk -F "]" '{print $1}' >> "DomainGroups@$ip"
-	cat enum | grep "Getting domain groups" -A 10000 | grep "group:\[" | awk -F "[" '{print $2}' | awk -F "]" '{print $1}' >> "DomainGroupstemp@$ip"
+	echo -e "$yellow ========================================(       Domain Groups on $blue $ip $yellow       )========================================" "\n" $clear | tee "DomainGroups@$ip"
+	cat enum | grep "Getting domain groups" -A 100000 | grep "group:\[" | awk -F "[" '{print $2}' | awk -F "]" '{print $1}' >> "DomainGroups@$ip"
+	cat enum | grep "Getting domain groups" -A 100000 | grep "group:\[" | awk -F "[" '{print $2}' | awk -F "]" '{print $1}' >> "DomainGroupstemp@$ip"
 	GroupMembership
 }
 
 GroupMembership() {
-	echo -e "$yellow ========================================(  Domain Group Membership on $blue $ip $yellow  )========================================" $clear | tee "DomainGroupMembership@$ip"
-	cat enum | grep "Getting domain group membership" -A 10000 > GroupMembership.txt
+	echo -e "$yellow ========================================(  Domain Group Membership on $blue $ip $yellow  )========================================" "\n" $clear | tee "DomainGroupMembership@$ip"
+	cat enum | grep "Getting domain group membership" -A 100000 > GroupMembership.txt
 	while IFS= read -r line; do
-		echo -e "$blue Getting Group Membership for $cyan $line $clear" >> "DomainGroupMembership@$ip" 
+		echo -e "$blue Domain Group Membership for $cyan $line $clear" >> "DomainGroupMembership@$ip" 
 		cat GroupMembership.txt | grep "$line" | awk -F ": " '{print $4}' >> "DomainGroupMembership@$ip"
 		echo -e "\n" "\n" "\n" >> "DomainGroupMembership@$ip" 
 		echo -e "$green ===================================================================" >> "DomainGroupMembership@$ip"
