@@ -1,16 +1,24 @@
 #!/bin/bash
 
+# Color variables
+red='\033[0;31m'
+green='\033[0;32m'
+yellow='\033[0;33m'
+blue='\033[0;34m'
+cyan='\033[0;36m'
+clear='\033[0m'
+
 ip=$1
 
 Enumerator() {
-	echo "Running enum4linux, this may take a while"
+	echo -e "$red Running enum4linux, this may take a while $clear"
 	enum4linux -u '' -p '' -val "$ip" > enum
 	UserList
 }
 
 UserList() { 
 
-	echo "========================================( User Descriptions on $ip )========================================" | tee "UserDescriptions@$ip"
+	echo -e "$yellow ========================================(     User Descriptions on $blue $ip $yellow     )========================================" $clear | tee "UserDescriptions@$ip"
 	cat enum | grep "index" | awk -F "Name:" '{print $2}' | awk -F "Desc" '{print $1 ":" $2}' | tr -d "\t"| sed -e 's/Desc//g' | awk -F ": " '{print $1 $2}' | column -s ":" -t >> "UserDescriptions@$ip"
 	GetDomain
 	UserNames
@@ -21,37 +29,39 @@ GetDomain() {
 }
 
 UserNames() {
-	echo "========================================( Usernames on $ip )========================================" | tee "Usernames@$ip"
+	echo -e "$yellow ========================================(         Usernames on $blue $ip $yellow         )========================================" $clear | tee "Usernames@$ip"
 	cat enum | grep "user:\[" | awk -F "[" '{print $2}' | awk -F "]" '{print $1}' | sort | uniq > Names.txt
 	while IFS= read -r line; do
-		echo "$Domain"'\'"$line" >> "Usernames@$ip"
+		echo $Domain'\'$line >> "Usernames@$ip"
 	done < Names.txt
 	rm Names.txt
 	PasswordPolicy
 }
 
 PasswordPolicy() {
-	echo "========================================( Password Policies on $ip )========================================" | tee "PasswordPolicies@$ip"
+	echo -e "$yellow ========================================(     Password Policies on $blue $ip $yellow     )========================================" $clear | tee "PasswordPolicies@$ip"
 	cat enum | grep "Password Info for Domain" -A 18 >> "PasswordPolicies@$ip"
 	DomainGroups
 }
 
 DomainGroups() {
-	echo "========================================( Domain Groups on $ip )========================================" | tee "DomainGroups@$ip"
+	echo -e "$yellow ========================================(       Domain Groups on $blue $ip $yellow       )========================================" $clear | tee "DomainGroups@$ip"
 	cat enum | grep "Getting domain groups" -A 10000 | grep "group:\[" | awk -F "[" '{print $2}' | awk -F "]" '{print $1}' >> "DomainGroups@$ip"
+	cat enum | grep "Getting domain groups" -A 10000 | grep "group:\[" | awk -F "[" '{print $2}' | awk -F "]" '{print $1}' >> "DomainGroupstemp@$ip"
 	GroupMembership
 }
 
 GroupMembership() {
-	echo "========================================( Domain Group Membership on $ip )========================================" | tee "DomainGroupMembership@$ip"
+	echo -e "$yellow ========================================(  Domain Group Membership on $blue $ip $yellow  )========================================" $clear | tee "DomainGroupMembership@$ip"
 	cat enum | grep "Getting domain group membership" -A 10000 > GroupMembership.txt
 	while IFS= read -r line; do
-		echo "Getting Group Membership for $line" >> "DomainGroupMembership@$ip" 
+		echo -e "$blue Getting Group Membership for $cyan $line $clear" >> "DomainGroupMembership@$ip" 
 		cat GroupMembership.txt | grep "$line" | awk -F ": " '{print $4}' >> "DomainGroupMembership@$ip"
 		echo -e "\n" "\n" "\n" >> "DomainGroupMembership@$ip" 
-		echo "===================================================================" >> "DomainGroupMembership@$ip"
-	done < "DomainGroups@$ip"
-	echo "========================================( Done! )========================================" 
+		echo -e "$green ===================================================================" >> "DomainGroupMembership@$ip"
+	done < "DomainGroupstemp@$ip"
+	echo -e "$yellow ========================================(                  $green Done! $yellow                   )========================================" 
+	rm "DomainGroupstemp@$ip"
 	rm GroupMembership.txt
 	rm enum
 }
