@@ -9,7 +9,7 @@ Enumerator() {
 
 UserList() { 
 	echo "========================================( Users on $ip )========================================" | tee "UserDescriptions@$ip"
-	cat enum | grep "index" | awk -F "Name:" '{print $2}' | sort | uniq >> "UserDescriptions@$ip"
+	cat enum | grep "index" | awk -F "Name:" '{print $2}' | | awk -F "Desc" '{print $1 ":" $2}' | tr -d "\t"| sed -e 's/Desc//g' | awk -F ": " '{print $1 $2}' | column -s ":" -t >> "UserDescriptions@$ip"
 	GetDomain
 	UserNames
 }
