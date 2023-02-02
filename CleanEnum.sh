@@ -3,12 +3,14 @@
 ip=$1
 
 Enumerator() {
-	enum4linux -u '' -p '' -val "$ip" | tee enum
+	echo "Running enum4linux, this may take a while"
+	enum4linux -u '' -p '' -val "$ip" > enum
 	UserList
 }
 
 UserList() { 
-	echo "========================================( Users on $ip )========================================" | tee "UserDescriptions@$ip"
+
+	echo "========================================( User Descriptions on $ip )========================================" | tee "UserDescriptions@$ip"
 	cat enum | grep "index" | awk -F "Name:" '{print $2}' | awk -F "Desc" '{print $1 ":" $2}' | tr -d "\t"| sed -e 's/Desc//g' | awk -F ": " '{print $1 $2}' | column -s ":" -t >> "UserDescriptions@$ip"
 	GetDomain
 	UserNames
@@ -36,7 +38,7 @@ PasswordPolicy() {
 
 DomainGroups() {
 	echo "========================================( Domain Groups on $ip )========================================" | tee "DomainGroups@$ip"
-	cat enum | grep "Getting domain groups" -A 3000 | grep "group:\[" | awk -F "[" '{print $2}' | awk -F "]" '{print $1}' >> "DomainGroups@$ip"
+	cat enum | grep "Getting domain groups" -A 10000 | grep "group:\[" | awk -F "[" '{print $2}' | awk -F "]" '{print $1}' >> "DomainGroups@$ip"
 	GroupMembership
 }
 
@@ -49,7 +51,7 @@ GroupMembership() {
 		echo -e "\n" "\n" "\n" >> "DomainGroupMembership@$ip" 
 		echo "===================================================================" >> "DomainGroupMembership@$ip"
 	done < "DomainGroups@$ip"
-  echo "========================================( Done! )========================================"
+	echo "========================================( Done! )========================================" 
 	rm GroupMembership.txt
 	rm enum
 }
