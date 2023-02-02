@@ -19,6 +19,8 @@ Enumerator() {
 UserList() { 
 
 	echo -e "$yellow ========================================(     User Descriptions on $blue $ip $yellow     )========================================" "\n" $clear | tee "UserDescriptions@$ip"
+	echo -e $yellow "Full Name \t\t\t\t Description" > "UserDescriptions@$ip"
+	echo -e $blue "==============================================================================" $clear >> "UserDescriptions@$ip"
 	cat enum | grep "index" | awk -F "Name:" '{print $2}' | awk -F "Desc" '{print $1 ":" $2}' | tr -d "\t"| sed -e 's/Desc//g' | awk -F ": " '{print $1 $2}' | column -s ":" -t >> "UserDescriptions@$ip"
 	GetDomain
 	UserNames
