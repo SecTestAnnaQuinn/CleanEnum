@@ -47,7 +47,7 @@ PasswordPolicy() {
 DomainGroups() {
 	echo -e "$yellow ========================================(       Domain Groups on $blue $ip $yellow       )========================================" "\n" $clear | tee "DomainGroups@$ip"
 	cat enum | grep "Getting domain groups" -A 100000 | grep "group:\[" | awk -F "[" '{print $2}' | awk -F "]" '{print $1}' >> "DomainGroups@$ip"
-	cat enum | grep "Getting domain groups" -A 100000 | grep "group:\[" | awk -F "[" '{print $2}' | awk -F "]" '{print $1}' >> "DomainGroupstemp@$ip"
+	cat enum | grep "Getting domain groups" -A 100000 | grep "group:\[" | awk -F "[" '{print $2}' | awk -F "]" '{print $1}' > "DomainGroupstemp@$ip"
 	GroupMembership
 }
 
